@@ -81,4 +81,4 @@ class IocContainerContract
 
 				for depName, depValue of dependencies
 					@_assertInstance typeof depValue == 'string', "dependency '#{depName}' should be a string"
-					@_assertInstance depValue in @schema, "dependency '#{depName}': schema doesn't have instance '#{depValue}'"
+					@_assertInstance depValue of @schema, "dependency '#{depName}': schema doesn't have instance '#{depValue}'"

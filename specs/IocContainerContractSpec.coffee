@@ -1,5 +1,8 @@
 describe 'IocContainerContract', ->
 
+	#TODO: при проверке контракта прогонять спеки и для сущности, определяющей контракт,
+	#т.к. контракт может ошибочно менять поведение сущности даже при корректных входных данных
+
 	expectAssertFail = (assertionMessage, func) ->
 		expect(func).toThrow new AssertException assertionMessage
 
