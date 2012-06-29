@@ -3,6 +3,7 @@ describe 'IocContainerContract', ->
 	#TODO: при проверке контракта прогонять спеки и для сущности, определяющей контракт,
 	#т.к. контракт может ошибочно менять поведение сущности даже при корректных входных данных
 
+	#TODO: вынести в jasmine: expect(func).toFailAssertion
 	expectAssertFail = (assertionMessage, func) ->
 		expect(func).toThrow new AssertException assertionMessage
 
@@ -29,33 +30,33 @@ describe 'IocContainerContract', ->
 		describe 'it checks each instance in schema', ->
 
 			#TODO: разбить на отдельные спеки по смыслу
-			assertInvalidSchema = (assertMessage, invalidSchema) ->
+			expectAssertFailOnInvalidSchema = (assertMessage, invalidSchema) ->
 				completeMessage = 'invalid instance \'foo\': ' + assertMessage
 				expectAssertFail completeMessage, -> iocContainer.setSchema invalidSchema
 
-			throwOnInvalidSchema = (specDescription, assertMessage, invalidSchema) ->
-				it specDescription, -> assertInvalidSchema assertMessage, invalidSchema
+			itThrowsOnInvalidSchema = (specDescription, assertMessage, invalidSchema) ->
+				it specDescription, -> expectAssertFailOnInvalidSchema assertMessage, invalidSchema
 
-			throwOnInvalidSchema 'should have only one type', 'has several types: single, factoryFunction',
+			itThrowsOnInvalidSchema 'should have only one type', 'has several types: single, factoryFunction',
 				foo:
 					single: ->
 					factoryFunction: ->
-			throwOnInvalidSchema 'should have contents', 'contents not set', foo: null
-			throwOnInvalidSchema 'type should be given', 'has no type', foo: {}
+			itThrowsOnInvalidSchema 'should have contents', 'contents not set', foo: null
+			itThrowsOnInvalidSchema 'type should be given', 'has no type', foo: {}
 
-			throwOnInvalidSchema "source should be set", "source is undefined or null",
+			itThrowsOnInvalidSchema "source should be set", "source is undefined or null",
 				foo:
 					single: null
 
-			throwOnInvalidSchema 'source for \'single\' should be function', 'source for \'single\' should be function',
+			itThrowsOnInvalidSchema 'source for \'single\' should be function', 'source for \'single\' should be function',
 				foo:
 					single: {}
 
-			throwOnInvalidSchema 'source for \'factoryFunction\' should be function', 'source for \'factoryFunction\' should be function',
+			itThrowsOnInvalidSchema 'source for \'factoryFunction\' should be function', 'source for \'factoryFunction\' should be function',
 				foo:
 					factoryFunction: {}
 
-			throwOnInvalidSchema 'should have only allowed fields', "unknown fields: bar, baz. allowed fields: single, ref, factoryFunction, deps",
+			itThrowsOnInvalidSchema 'should have only allowed fields', "unknown fields: bar, baz. allowed fields: single, ref, factoryFunction, deps",
 				foo:
 					single: ->
 					bar: null
@@ -65,7 +66,7 @@ describe 'IocContainerContract', ->
 				for invalidDeps in [undefined, null, 'invalid', {}]
 					do (invalidDeps) ->
 						typeofDeps = if invalidDeps == null then 'null' else typeof invalidDeps
-						assertInvalidSchema "deps should be non-empty dictionary, #{typeofDeps} given",
+						expectAssertFailOnInvalidSchema "deps should be non-empty dictionary, #{typeofDeps} given",
 							foo:
 								single: ->
 								deps: invalidDeps
@@ -73,12 +74,12 @@ describe 'IocContainerContract', ->
 			it 'each dependency should be a string name of other instance in schema', ->
 				for invalidDep in [null, {}]
 					do (invalidDep) ->
-						assertInvalidSchema "dependency 'barProperty' should be a string",
+						expectAssertFailOnInvalidSchema "dependency 'barProperty' should be a string",
 							foo:
 								single: ->
 								deps:
 									barProperty: invalidDep
-				assertInvalidSchema "dependency 'barProperty': schema doesn't have instance 'bar'",
+				expectAssertFailOnInvalidSchema "dependency 'barProperty': schema doesn't have instance 'bar'",
 					foo:
 						single: ->
 						deps:

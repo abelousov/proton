@@ -36,7 +36,7 @@ describe('IocContainerContract', function() {
       });
     });
     return describe('it checks each instance in schema', function() {
-      var assertInvalidSchema, throwOnInvalidSchema;
+      var assertInvalidSchema, itThrowsOnInvalidSchema;
       assertInvalidSchema = function(assertMessage, invalidSchema) {
         var completeMessage;
         completeMessage = 'invalid instance \'foo\': ' + assertMessage;
@@ -44,39 +44,39 @@ describe('IocContainerContract', function() {
           return iocContainer.setSchema(invalidSchema);
         });
       };
-      throwOnInvalidSchema = function(specDescription, assertMessage, invalidSchema) {
+      itThrowsOnInvalidSchema = function(specDescription, assertMessage, invalidSchema) {
         return it(specDescription, function() {
           return assertInvalidSchema(assertMessage, invalidSchema);
         });
       };
-      throwOnInvalidSchema('should have only one type', 'has several types: single, factoryFunction', {
+      itThrowsOnInvalidSchema('should have only one type', 'has several types: single, factoryFunction', {
         foo: {
           single: function() {},
           factoryFunction: function() {}
         }
       });
-      throwOnInvalidSchema('should have contents', 'contents not set', {
+      itThrowsOnInvalidSchema('should have contents', 'contents not set', {
         foo: null
       });
-      throwOnInvalidSchema('type should be given', 'has no type', {
+      itThrowsOnInvalidSchema('type should be given', 'has no type', {
         foo: {}
       });
-      throwOnInvalidSchema("source should be set", "source is undefined or null", {
+      itThrowsOnInvalidSchema("source should be set", "source is undefined or null", {
         foo: {
           single: null
         }
       });
-      throwOnInvalidSchema('source for \'single\' should be function', 'source for \'single\' should be function', {
+      itThrowsOnInvalidSchema('source for \'single\' should be function', 'source for \'single\' should be function', {
         foo: {
           single: {}
         }
       });
-      throwOnInvalidSchema('source for \'factoryFunction\' should be function', 'source for \'factoryFunction\' should be function', {
+      itThrowsOnInvalidSchema('source for \'factoryFunction\' should be function', 'source for \'factoryFunction\' should be function', {
         foo: {
           factoryFunction: {}
         }
       });
-      throwOnInvalidSchema('should have only allowed fields', "unknown fields: bar, baz. allowed fields: single, ref, factoryFunction, deps", {
+      itThrowsOnInvalidSchema('should have only allowed fields', "unknown fields: bar, baz. allowed fields: single, ref, factoryFunction, deps", {
         foo: {
           single: function() {},
           bar: null,
